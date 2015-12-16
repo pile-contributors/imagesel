@@ -18,9 +18,15 @@ macro    (imageselInit
 
     # compose the list of headers and sources
     set(IMAGESEL_HEADERS
-        "imagesel.h")
+        "imagesel.h"
+        "layoutinterf.h"
+        "activegrip.h")
     set(IMAGESEL_SOURCES
+        "activegrip.cc"
+        "layoutinterf.cc"
         "imagesel.cc")
+    set(IMAGESEL_QT_MODS
+        Core Widgets)
 
     pileSetSources(
         "${IMAGESEL_INIT_NAME}"

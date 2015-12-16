@@ -1,6 +1,6 @@
 /**
  * @file imagesel.cc
- * @brief Definitions for ImageSel class.
+ * @brief Definitions for ActiveGrip class.
  * @author Nicu Tofan <nicu.tofan@gmail.com>
  * @copyright Copyright 2014 piles contributors. All rights reserved.
  * This file is released under the
@@ -9,11 +9,15 @@
 
 #include "imagesel.h"
 #include "imagesel-private.h"
+#include "activegrip.h"
 
+#include <QMouseEvent>
+#include <QPaintEvent>
 #include <QPainter>
 
+
 /**
- * @class ImageSel
+ * @class ActiveGrip
  *
  * Detailed description.
  */
@@ -22,14 +26,13 @@
 /**
  * Detailed description for constructor.
  */
-ImageSel::ImageSel(QWidget * parent) :
+ActiveGrip::ActiveGrip (ImageSel * parent) :
     QWidget (parent),
-    image_(),
     offset_(),
-    lay_(NULL)
+    flags_(GST_NONE)
 {
     IMAGESEL_TRACE_ENTRY;
-
+    setGripSize (8);
     IMAGESEL_TRACE_EXIT;
 }
 /* ========================================================================= */
@@ -38,7 +41,7 @@ ImageSel::ImageSel(QWidget * parent) :
 /**
  * Detailed description for destructor.
  */
-ImageSel::~ImageSel()
+ActiveGrip::~ActiveGrip()
 {
     IMAGESEL_TRACE_ENTRY;
 
@@ -47,45 +50,31 @@ ImageSel::~ImageSel()
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-void ImageSel::setBuildInLayout (ImageSel::BuildInLay kind)
+ImageSel *ActiveGrip::parentSel() const
 {
-    switch (kind) {
-    case Rectangular: {
-        setLay (new RectangularBuildInlay ());
-        break; }
-    case Square: {
-        setLay (new SquareBuildInlay ());
-        break; }
-    case Ellipse: {
-        setLay (new EllipseBuildInlay ());
-        break; }
-    case Circle: {
-        setLay (new CircleBuildInlay ());
-        break; }
-    default:
-        IMAGESEL_DEBUGM("invalid build-in constant: %d\n", kind);
-    }
+    return qobject_cast<ImageSel *>(parentWidget());
 }
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-/**
- *
- * @param grip the grip that's being moved
- * @param pos the position where it would be if this was a free move
- * @return The position of the grip.
- */
-QPoint ImageSel::gripMode (ActiveGrip *grip, const QPoint &pos)
+void ActiveGrip::enterEvent (QEvent *event)
 {
-    if (lay_ == NULL)
-        return pos;
-    return lay_->gripMode (this, grip, pos);
+    flags_ = flags_ | GST_HOVER;
+    update ();
 }
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-void ImageSel::mousePressEvent (QMouseEvent *event)
+void ActiveGrip::leaveEvent (QEvent *event)
 {
+    update ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void ActiveGrip::mousePressEvent (QMouseEvent *event)
+{
+    flags_ = flags_ | GST_CLICKED;
     offset_ = event->pos();
     update ();
     event->accept();
@@ -93,44 +82,44 @@ void ImageSel::mousePressEvent (QMouseEvent *event)
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-void ImageSel::mouseReleaseEvent (QMouseEvent *event)
+void ActiveGrip::mouseReleaseEvent (QMouseEvent *event)
 {
+    flags_ = flags_ & (~GST_CLICKED);
     update ();
     event->accept();
 }
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-void ImageSel::mouseMoveEvent (QMouseEvent *event)
+void ActiveGrip::mouseMoveEvent (QMouseEvent *event)
 {
     if (event->buttons() & Qt::LeftButton) {
-        return lay_->globalMove (this, event->pos() - offset_);
+        this->move (
+                    parentSel->gripMode (
+                        this,
+                        mapToParent (
+                            event->pos() - offset_)));
     }
     event->accept();
 }
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-void ImageSel::paintEvent (QPaintEvent *event)
+void ActiveGrip::paintEvent (QPaintEvent *event)
 {
     QPainter painter (this);
-
-    if (!image_.isNull()) {
-        QRect src (image_.rect());
-        QSize dst (size ());
-        int scale = qMin(dst.width() / src.width(), dst.height()/src.height());
-        int dst_width = src.width() * scale;
-        int dst_height = src.height() * scale;
-        QRect drect (
-                    (dst.width() - dst_width)/2,
-                    (dst.height() - dst_height)/2,
-                    dst_width, dst_height);
-
-        painter.drawPixmap (drect, image_, src);
+    int rad = size().width()/2 - 1;
+    if ((flags_ & GST_CLICKED) == GST_CLICKED) {
+        painter.setPen (Qt::red);
+    } else if ((flags_ & GST_HOVER) == GST_HOVER) {
+        painter.setPen (Qt::blue);
+        painter.setBrush (Qt::red);
+    } else {
+        painter.setPen (Qt::black);
     }
-
-    lay_->paint (this);
-
+    painter.drawEllipse (rad);
     event->accept ();
 }
 /* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */

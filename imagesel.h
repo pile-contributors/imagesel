@@ -53,6 +53,13 @@ public:
         update ();
     }
 
+    //! Remove the image that's being presented to the user.
+    void
+    clearImage () {
+        image_ = QPixmap ();
+        update ();
+    }
+
     //! The image that's being presented to the user.
     const QPixmap &
     image () const {

@@ -7,8 +7,8 @@
  * [MIT License](http://opensource.org/licenses/mit-license.html)
  */
 
-#ifndef GUARD_ACTIVEGRIP_H_INCLUDE
-#define GUARD_ACTIVEGRIP_H_INCLUDE
+#ifndef GUARD_LAYOUTINTERF_H_INCLUDE
+#define GUARD_LAYOUTINTERF_H_INCLUDE
 
 #include <imagesel/imagesel-config.h>
 #include <QPoint>
@@ -33,7 +33,7 @@ public:
         ImageSel * target,
         const QPoint & pos) = 0;
 
-    virtual void
+    virtual QPoint
     gripMode (
         ImageSel * target,
         ActiveGrip *grip,
@@ -45,4 +45,4 @@ private:
 
 };
 
-#endif // GUARD_ACTIVEGRIP_H_INCLUDE
+#endif // GUARD_LAYOUTINTERF_H_INCLUDE

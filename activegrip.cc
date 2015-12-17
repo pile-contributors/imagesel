@@ -95,7 +95,7 @@ void ActiveGrip::mouseMoveEvent (QMouseEvent *event)
 {
     if (event->buttons() & Qt::LeftButton) {
         this->move (
-                    parentSel->gripMode (
+                    parentSel()->gripMode (
                         this,
                         mapToParent (
                             event->pos() - offset_)));
@@ -117,7 +117,8 @@ void ActiveGrip::paintEvent (QPaintEvent *event)
     } else {
         painter.setPen (Qt::black);
     }
-    painter.drawEllipse (rad);
+    int w = size().width() - 2;
+    painter.drawEllipse (1, 1, w, w);
     event->accept ();
 }
 /* ========================================================================= */

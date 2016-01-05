@@ -39,7 +39,7 @@ public:
 
 
     //! Default constructor.
-    ImageSel (
+    explicit ImageSel (
             QWidget * parent = NULL);
 
     //! Destructor.

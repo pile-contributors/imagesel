@@ -30,12 +30,12 @@ class IMAGESEL_EXPORT ActiveGrip : public QWidget {
 public:
 
     //! Default constructor.
-    ActiveGrip (ImageSel * parent);
+    explicit ActiveGrip (ImageSel * parent);
 
     //! Destructor.
     virtual ~ActiveGrip ();
 
-    //! Retreive GripSize.
+    //! Retrieve GripSize.
     inline int
     getGripSize () const {
         return minimumSize().width();
@@ -64,6 +64,8 @@ protected:
 private:
     QPoint offset_;
     int flags_;
+
+public: virtual void anchorVtable() const;
 };
 
 #endif // GUARD_ACTIVEGRIP_H_INCLUDE

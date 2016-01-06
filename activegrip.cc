@@ -108,7 +108,7 @@ void ActiveGrip::mouseMoveEvent (QMouseEvent *event)
 void ActiveGrip::paintEvent (QPaintEvent *event)
 {
     QPainter painter (this);
-    int rad = size().width()/2 - 1;
+    // int rad = size().width()/2 - 1;
     if ((flags_ & GST_CLICKED) == GST_CLICKED) {
         painter.setPen (Qt::red);
     } else if ((flags_ & GST_HOVER) == GST_HOVER) {
@@ -123,4 +123,4 @@ void ActiveGrip::paintEvent (QPaintEvent *event)
 }
 /* ========================================================================= */
 
-/* ------------------------------------------------------------------------- */
+void ActiveGrip::anchorVtable() const {}

@@ -53,18 +53,21 @@ ImageSel::~ImageSel()
 class RectangularBuildInlay : public LayoutInterf {
     virtual void
     paint (
-        ImageSel * target) {}
+        ImageSel * /*target*/)
+    {}
 
     virtual void
     globalMove (
-        ImageSel * target,
-            const QPoint & pos) {}
+        ImageSel * /*target*/,
+        const QPoint & /*pos*/)
+    {}
 
     virtual QPoint
     gripMode (
-        ImageSel * target,
-        ActiveGrip *grip,
-        const QPoint & pos) {
+        ImageSel * /*target*/,
+        ActiveGrip * /*grip*/,
+        const QPoint & /*pos*/)
+    {
         return QPoint();
     }
 
@@ -73,18 +76,21 @@ class RectangularBuildInlay : public LayoutInterf {
 class SquareBuildInlay : public LayoutInterf {
     virtual void
     paint (
-        ImageSel * target) {}
+        ImageSel * /*target*/)
+    {}
 
     virtual void
     globalMove (
-        ImageSel * target,
-            const QPoint & pos) {}
+        ImageSel * /*target*/,
+        const QPoint & /*pos*/)
+    {}
 
     virtual QPoint
     gripMode (
-        ImageSel * target,
-        ActiveGrip *grip,
-        const QPoint & pos) {
+        ImageSel * /*target*/,
+        ActiveGrip * /*grip*/,
+        const QPoint & /*pos*/)
+    {
         return QPoint();
     }
 };
@@ -92,18 +98,21 @@ class SquareBuildInlay : public LayoutInterf {
 class EllipseBuildInlay : public LayoutInterf {
     virtual void
     paint (
-        ImageSel * target) {}
+        ImageSel * /*target*/)
+    {}
 
     virtual void
     globalMove (
-        ImageSel * target,
-            const QPoint & pos) {}
+        ImageSel * /*target*/,
+        const QPoint & /*pos*/)
+    {}
 
     virtual QPoint
     gripMode (
-        ImageSel * target,
-        ActiveGrip *grip,
-        const QPoint & pos){
+        ImageSel * /*target*/,
+        ActiveGrip * /*grip*/,
+        const QPoint & /*pos*/)
+    {
         return QPoint();
     }
 };
@@ -111,18 +120,21 @@ class EllipseBuildInlay : public LayoutInterf {
 class CircleBuildInlay : public LayoutInterf {
     virtual void
     paint (
-        ImageSel * target) {}
+        ImageSel * /*target*/)
+    {}
 
     virtual void
     globalMove (
-        ImageSel * target,
-            const QPoint & pos) {}
+        ImageSel * /*target*/,
+        const QPoint & /*pos*/)
+    {}
 
     virtual QPoint
     gripMode (
-        ImageSel * target,
-        ActiveGrip *grip,
-        const QPoint & pos) {
+        ImageSel * /*target*/,
+        ActiveGrip * /*grip*/,
+        const QPoint & /*pos*/)
+    {
         return QPoint();
     }
 };
@@ -187,7 +199,9 @@ void ImageSel::mouseReleaseEvent (QMouseEvent *event)
 void ImageSel::mouseMoveEvent (QMouseEvent *event)
 {
     if (event->buttons() & Qt::LeftButton) {
-        return lay_->globalMove (this, event->pos() - offset_);
+        if (lay_ != NULL) {
+            return lay_->globalMove (this, event->pos() - offset_);
+        }
     }
     event->accept();
 }
@@ -201,9 +215,13 @@ void ImageSel::paintEvent (QPaintEvent *event)
     if (!image_.isNull()) {
         QRect src (image_.rect());
         QSize dst (size ());
-        float scale = qMin((float)dst.width() / (float)src.width(), (float)dst.height()/(float)src.height());
-        int dst_width = src.width() * scale;
-        int dst_height = src.height() * scale;
+        float scale = qMin(
+                    static_cast<float> (dst.width()) /
+                    static_cast<float> (src.width()),
+                    static_cast<float> (dst.height()) /
+                    static_cast<float> (src.height()));
+        int dst_width = static_cast<int> (src.width() * scale);
+        int dst_height = static_cast<int> (src.height() * scale);
         QRect drect (
                     (dst.width() - dst_width)/2,
                     (dst.height() - dst_height)/2,
